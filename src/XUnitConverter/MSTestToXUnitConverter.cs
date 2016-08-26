@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CodeGeneration;
 using System.Runtime.Serialization;
 using System.IO;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace XUnitConverter
 {
@@ -90,6 +91,7 @@ namespace XUnitConverter
             TransformationTracker transformationTracker = new TransformationTracker();
             RemoveTestClassAttributes(root, semanticModel, transformationTracker);
             RemoveContractsRequiredAttributes(root, semanticModel, transformationTracker);
+            ChangeTestInitializeAttributesToCtor(root, semanticModel, transformationTracker);
             ChangeTestMethodAttributesToFact(root, semanticModel, transformationTracker);
             ChangeAssertCalls(root, semanticModel, transformationTracker);
             root = transformationTracker.TransformRoot(root);
@@ -168,6 +170,38 @@ namespace XUnitConverter
                     }
                 }
                 return transformationRoot;
+            });
+        }
+        private void ChangeTestInitializeAttributesToCtor(CompilationUnitSyntax root, SemanticModel semanticModel, TransformationTracker transformationTracker)
+        {
+            List<AttributeSyntax> nodesToReplace = new List<AttributeSyntax>();
+
+            foreach (var attributeSyntax in root.DescendantNodes().OfType<AttributeSyntax>())
+            {
+                var typeInfo = semanticModel.GetTypeInfo(attributeSyntax);
+                if (typeInfo.Type != null)
+                {
+                    string attributeTypeDocID = typeInfo.Type.GetDocumentationCommentId();
+                    if (IsTestNamespaceType(attributeTypeDocID, "TestInitializeAttribute"))
+                    {
+                        nodesToReplace.Add(attributeSyntax);
+                    }
+                }
+            }
+
+            transformationTracker.AddTransformation(nodesToReplace, (transformationRoot, rewrittenNodes, originalNodeMap) =>
+            {
+                foreach (AttributeSyntax rewrittenNode in rewrittenNodes)
+                {
+                    var attributeListSyntax = (AttributeListSyntax)rewrittenNode.Parent;
+                    var methodDeclarationSyntax = (MethodDeclarationSyntax) attributeListSyntax.Parent;
+                    
+                    var className = transformationRoot.DescendantNodes().OfType<ClassDeclarationSyntax>().Last().Identifier;
+                    ConstructorDeclarationSyntax ctorSyntax = ConstructorDeclaration(new SyntaxList<AttributeListSyntax>(),methodDeclarationSyntax.Modifiers,className.NormalizeWhitespace(), methodDeclarationSyntax.ParameterList,null,methodDeclarationSyntax.Body);
+                    transformationRoot = transformationRoot.ReplaceNode(methodDeclarationSyntax, ctorSyntax);
+                }
+                return transformationRoot;
+
             });
         }
 
