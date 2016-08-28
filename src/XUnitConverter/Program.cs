@@ -38,6 +38,8 @@ namespace XUnitConverter
                     new MSTestToXUnitConverter(),
                     new TestAssertTrueOrFalseConverter(),
                     new AssertArgumentOrderConverter(),
+                    new IgnoreToSkipConverter(),
+
                 };
 
             foreach (var converter in converters)
