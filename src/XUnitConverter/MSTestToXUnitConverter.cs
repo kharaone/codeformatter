@@ -226,110 +226,25 @@ namespace XUnitConverter
 
             transformationTracker.AddTransformation(nodesToReplace, (transformationRoot, rewrittenNodes, originalNodeMap) =>
             {
-                var attributeListSyntax = (AttributeListSyntax)rewrittenNodes.First().Parent;
-                var methodDeclarationSyntax = (MethodDeclarationSyntax)attributeListSyntax.Parent;
+                foreach (AttributeSyntax rewrittenNode in rewrittenNodes)
+                {
+                    var attributeListSyntax = (AttributeListSyntax)rewrittenNode.Parent;
+                    var methodDeclarationSyntax = (MethodDeclarationSyntax)attributeListSyntax.Parent;
 
 
-                transformationRoot = transformationRoot.ReplaceNode(methodDeclarationSyntax, methodDeclarationSyntax.WithAttributeLists(new SyntaxList<AttributeListSyntax>()).WithIdentifier(Identifier("Dispose").NormalizeWhitespace()));
-                var classDeclarationSyntax = transformationRoot.DescendantNodes().OfType<ClassDeclarationSyntax>().First();
-                var class2 =
-                    classDeclarationSyntax.WithBaseList(
-                        BaseList(
-                            new SeparatedSyntaxList<BaseTypeSyntax>().Add(
-                                SimpleBaseType(IdentifierName("IDisposable")))));
-                transformationRoot = transformationRoot.ReplaceNode(classDeclarationSyntax, class2);
+                    transformationRoot = transformationRoot.ReplaceNode(methodDeclarationSyntax, methodDeclarationSyntax.WithAttributeLists(new SyntaxList<AttributeListSyntax>()).WithIdentifier(Identifier("Dispose").NormalizeWhitespace()));
+                    var classDeclarationSyntax = transformationRoot.DescendantNodes().OfType<ClassDeclarationSyntax>().First();
+                    var class2 =
+                        classDeclarationSyntax.WithBaseList(
+                            BaseList(
+                                new SeparatedSyntaxList<BaseTypeSyntax>().Add(
+                                    SimpleBaseType(IdentifierName("IDisposable")))));
+                    transformationRoot = transformationRoot.ReplaceNode(classDeclarationSyntax, class2);
+                }
                 return transformationRoot;
 
             });
         }
-
-        private void ChangeIgnoreAttributesToSkipParameters(CompilationUnitSyntax root, SemanticModel semanticModel,
-            TransformationTracker transformationTracker)
-        {
-            List<AttributeSyntax> nodesToReplace = new List<AttributeSyntax>();
-
-            foreach (var attributeSyntax in root.DescendantNodes().OfType<AttributeSyntax>())
-            {
-                var typeInfo = semanticModel.GetTypeInfo(attributeSyntax);
-                if (typeInfo.Type != null)
-                {
-                    string attributeTypeDocID = typeInfo.Type.GetDocumentationCommentId();
-                    if (IsTestNamespaceType(attributeTypeDocID, "IgnoreAttribute"))
-                    {
-                        nodesToReplace.Add(attributeSyntax);
-                    }
-                }
-            }
-
-            transformationTracker.AddTransformation(nodesToReplace,
-                (transformationRoot, rewrittenNodes, originalNodeMap) =>
-                {
-                    foreach (var attribute in transformationRoot.DescendantNodes().OfType<AttributeSyntax>().Where(a => a.Name.ToString().Equals("Ignore")))
-                    {
-                        var attributeListSyntax = (AttributeListSyntax) attribute.Parent;
-                        if (attributeListSyntax.DescendantNodes()
-                            .OfType<AttributeSyntax>()
-                            .Any(a => a.ToString().Equals("Fact")))
-                        {
-                            //
-                            var factAttribute =
-                                attributeListSyntax
-                                    .DescendantNodes()
-                                    .OfType<AttributeSyntax>()
-                                    .First(a => a.ToString().Equals("Fact"));
-
-                            var attributeListSyntaxUpdated = attributeListSyntax.ReplaceNode(factAttribute,
-                                factAttribute.WithArgumentList(
-                                    AttributeArgumentList(
-                                        new SeparatedSyntaxList<AttributeArgumentSyntax>().Add(
-                                            AttributeArgument(NameEquals("Skip"), null,
-                                                LiteralExpression(SyntaxKind.StringLiteralExpression,
-                                                    Token(TriviaList(), SyntaxKind.StringLiteralToken,
-                                                        @"""Ignored in MSTest""", "Ignored in MSTest", TriviaList())))))));
-
-                            attributeListSyntaxUpdated =
-                                attributeListSyntaxUpdated.RemoveNode(
-                                    attributeListSyntaxUpdated.ChildNodes().First(a => a.ToString().Equals("Ignore")),
-                                    SyntaxRemoveOptions.KeepTrailingTrivia);
-
-                            transformationRoot = transformationRoot.ReplaceNode(attributeListSyntax,
-                                attributeListSyntaxUpdated);
-                        }
-
-                        if (attributeListSyntax.ChildNodes().Count() == 1)
-                        {
-                            var methodDeclarationSyntax = (MethodDeclarationSyntax) attributeListSyntax.Parent;
-                            var factAttributeList =
-                                methodDeclarationSyntax.AttributeLists.First(
-                                    al => al.Attributes.Any(a => a.ToString().Equals("Fact")));
-                            var factAttribute = factAttributeList.Attributes.First();
-
-                            var skippedFactAttribute = factAttribute.WithArgumentList(
-                                AttributeArgumentList(
-                                    new SeparatedSyntaxList<AttributeArgumentSyntax>().Add(
-                                        AttributeArgument(NameEquals("Skip"), null,
-                                            LiteralExpression(SyntaxKind.StringLiteralExpression,
-                                                Token(TriviaList(), SyntaxKind.StringLiteralToken,
-                                                    @"""Ignored in MSTest""", "Ignored in MSTest", TriviaList()))))));
-
-                            transformationRoot = transformationRoot.ReplaceNode(factAttribute, skippedFactAttribute);
-
-
-                            var newMethodDeclarationSyntax =
-                                methodDeclarationSyntax.AttributeLists.Remove(attributeListSyntax);
-                            //methodDeclarationSyntaxUpdated =
-                            //    methodDeclarationSyntaxUpdated.RemoveNode(
-                            //        methodDeclarationSyntaxUpdated.DescendantNodes().OfType<AttributeSyntax>().First(a => a.Name.ToString().Equals("Ignore")).Parent,
-                            //        SyntaxRemoveOptions.KeepTrailingTrivia);
-
-                            transformationRoot = transformationRoot.ReplaceNode(methodDeclarationSyntax,
-                                methodDeclarationSyntax.WithAttributeLists(newMethodDeclarationSyntax));
-                        }
-                    }
-                    return transformationRoot;
-                });
-        }
-
 
         private void ChangeTestMethodAttributesToFact(CompilationUnitSyntax root, SemanticModel semanticModel, TransformationTracker transformationTracker)
         {

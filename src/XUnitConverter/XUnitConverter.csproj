@@ -79,6 +79,8 @@
   <ItemGroup>
     <Compile Include="AssertArgumentOrderConverter.cs" />
     <Compile Include="ConverterBase.cs" />
+    <Compile Include="ExpectedExceptionConverter.cs" />
+    <Compile Include="TestCategoryToTraitConverter.cs" />
     <Compile Include="NameHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

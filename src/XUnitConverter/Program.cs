@@ -39,7 +39,8 @@ namespace XUnitConverter
                     new TestAssertTrueOrFalseConverter(),
                     new AssertArgumentOrderConverter(),
                     new IgnoreToSkipConverter(),
-
+                    new TestCategoryConverter(),
+                    new ExpectedExceptionConverter()
                 };
 
             foreach (var converter in converters)
