@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Formatting;
 
 namespace XUnitConverter
 {
@@ -27,6 +28,11 @@ namespace XUnitConverter
                 }
 
                 solution = await ProcessAsync(document, syntaxNode, cancellationToken);
+
+                document = solution.GetDocument(id);
+                document = await Formatter.FormatAsync(document, cancellationToken: cancellationToken);
+                solution = document.Project.Solution;
+
             }
 
             return solution;
