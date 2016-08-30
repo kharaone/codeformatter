@@ -29,7 +29,6 @@ namespace XUnitConverter
             if (newNode != syntaxNode)
             {
                 document = document.WithSyntaxRoot(newNode);
-                //document = Formatter.FormatAsync(document, cancellationToken: cancellationToken).Result;
             }
 
             return Task.FromResult(document.Project.Solution);
@@ -89,13 +88,20 @@ namespace XUnitConverter
                     leadTriv = syntaxNode.GetLeadingTrivia();
                     syntaxNode = syntaxNode.WithBody(newBody);
                     //Append the leading trivia to the method
-                    syntaxNode = syntaxNode.WithLeadingTrivia(leadTriv);
+                    syntaxNode = syntaxNode.WithLeadingTrivia(leadTriv)
+                        .WithModifiers(
+                            TokenList(
+                                Token(
+                                    TriviaList(
+                                        Comment("//HACK: Naive implementation of ExpectedException in XUnit\n")),
+                                    SyntaxKind.PublicKeyword,
+                                    TriviaList())));
                 }
 
 
 
                 //Get the leading trivia (the newlines and comments)
-
+                
                 return base.VisitMethodDeclaration(syntaxNode);
             }
         }

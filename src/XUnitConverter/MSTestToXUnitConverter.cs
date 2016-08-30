@@ -96,7 +96,6 @@ namespace XUnitConverter
             ChangeTestInitializeAttributesToCtor(root, semanticModel, transformationTracker);
             ChangeTestCleanupAttributesToDispose(root, semanticModel, transformationTracker);
             ChangeTestMethodAttributesToFact(root, semanticModel, transformationTracker);
-            //ChangeIgnoreAttributesToSkipParameters(root, semanticModel, transformationTracker);
             ChangeAssertCalls(root, semanticModel, transformationTracker);
             root = transformationTracker.TransformRoot(root);
 
@@ -121,9 +120,10 @@ namespace XUnitConverter
 
             root = root.WithUsings(SyntaxFactory.List<UsingDirectiveSyntax>(newUsings));
             document = document.WithSyntaxRoot(root);
-            //document = Formatter.FormatAsync(document, cancellationToken: cancellationToken).Result;
 
-            return document.Project.Solution;
+            document = await Formatter.FormatAsync(document, cancellationToken: cancellationToken);
+            var solution = document.Project.Solution;
+            return solution;
         }
 
         private void RemoveContractsRequiredAttributes(CompilationUnitSyntax root, SemanticModel semanticModel, TransformationTracker transformationTracker)
@@ -239,8 +239,9 @@ namespace XUnitConverter
                     var class2 =
                         classDeclarationSyntax.WithBaseList(
                             BaseList(
-                                new SeparatedSyntaxList<BaseTypeSyntax>().Add(
-                                    SimpleBaseType(IdentifierName("IDisposable")))));
+                                SingletonSeparatedList<BaseTypeSyntax>(
+                                    SimpleBaseType(
+                                        IdentifierName("IDisposable"))))).NormalizeWhitespace();
                     transformationRoot = transformationRoot.ReplaceNode(classDeclarationSyntax, class2);
                 }
                 return transformationRoot;
