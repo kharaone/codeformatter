@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.MSBuild;
 
 namespace XUnitConverter
 {
@@ -25,6 +27,7 @@ namespace XUnitConverter
             if (newNode != syntaxNode)
             {
                 document = document.WithSyntaxRoot(newNode);
+                //document = Formatter.FormatAsync(document, cancellationToken: cancellationToken).Result;
             }
 
             return Task.FromResult(document.Project.Solution);

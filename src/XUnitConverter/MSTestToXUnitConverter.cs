@@ -17,6 +17,7 @@ using System.Runtime.Serialization;
 using System.IO;
 using Microsoft.CodeAnalysis.Text;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using Formatter = Microsoft.CodeAnalysis.Formatting.Formatter;
 
 namespace XUnitConverter
 {
@@ -119,9 +120,10 @@ namespace XUnitConverter
             newUsings[newUsings.Count - 1] = newUsings.Last().WithTrailingTrivia(usingTrailingTrivia);
 
             root = root.WithUsings(SyntaxFactory.List<UsingDirectiveSyntax>(newUsings));
+            document = document.WithSyntaxRoot(root);
+            //document = Formatter.FormatAsync(document, cancellationToken: cancellationToken).Result;
 
-
-            return document.WithSyntaxRoot(root).Project.Solution;
+            return document.Project.Solution;
         }
 
         private void RemoveContractsRequiredAttributes(CompilationUnitSyntax root, SemanticModel semanticModel, TransformationTracker transformationTracker)

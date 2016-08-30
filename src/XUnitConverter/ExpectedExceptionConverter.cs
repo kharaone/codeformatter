@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.MSBuild;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace XUnitConverter
@@ -27,6 +29,7 @@ namespace XUnitConverter
             if (newNode != syntaxNode)
             {
                 document = document.WithSyntaxRoot(newNode);
+                //document = Formatter.FormatAsync(document, cancellationToken: cancellationToken).Result;
             }
 
             return Task.FromResult(document.Project.Solution);
@@ -50,18 +53,20 @@ namespace XUnitConverter
                             .ToArray();
 
                     //If the lists are the same length, we are removing all attributes and can just avoid populating newAttributes.
-                    if (nodesToRemove.Length == 0) continue;
                     if (nodesToRemove.Length >0 )
                     {
                         isMethodToRefactor = true;
                         expectedException =
                         nodesToRemove.First().ArgumentList.DescendantNodes().OfType<IdentifierNameSyntax>().First();
-
-                        var newAttribute =
-                            (AttributeListSyntax) VisitAttributeList(
+                        if (nodesToRemove.Length != attributeList.Attributes.Count)
+                        {
+                            var newAttribute =
+                            (AttributeListSyntax)VisitAttributeList(
                                 attributeList.RemoveNodes(nodesToRemove, SyntaxRemoveOptions.KeepNoTrivia));
 
-                        newAttributes = newAttributes.Add(newAttribute);
+                            newAttributes = newAttributes.Add(newAttribute);
+                        }
+                            
                     }
                     else
                     {
@@ -79,7 +84,7 @@ namespace XUnitConverter
                 if (isMethodToRefactor)
                 {
                     var oldBody = syntaxNode.Body;
-                    var newBody = Block(ParseStatement("\nAssert.Throws<" + expectedException.Identifier + ">(()=>{"+oldBody+"});"));
+                    var newBody = Block(ParseStatement("Assert.Throws<" + expectedException.Identifier + ">(()=>"+oldBody+");"));
 
                     leadTriv = syntaxNode.GetLeadingTrivia();
                     syntaxNode = syntaxNode.WithBody(newBody);
@@ -87,11 +92,11 @@ namespace XUnitConverter
                     syntaxNode = syntaxNode.WithLeadingTrivia(leadTriv);
                 }
 
-                
+
 
                 //Get the leading trivia (the newlines and comments)
 
-                return syntaxNode;
+                return base.VisitMethodDeclaration(syntaxNode);
             }
         }
     }

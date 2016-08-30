@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace XUnitConverter
@@ -26,6 +27,7 @@ namespace XUnitConverter
             if (newNode != syntaxNode)
             {
                 document = document.WithSyntaxRoot(newNode);
+                //document = Formatter.FormatAsync(document, cancellationToken: cancellationToken).Result;
             }
 
             return Task.FromResult(document.Project.Solution);
@@ -68,7 +70,7 @@ namespace XUnitConverter
                 syntaxNode = syntaxNode.WithAttributeLists(newAttributes);
                 //Append the leading trivia to the method
                 syntaxNode = syntaxNode.WithLeadingTrivia(leadTriv);
-                return syntaxNode;
+                return base.VisitMethodDeclaration(syntaxNode);
             }
         }
     }
