@@ -39,7 +39,7 @@ namespace XUnitConverter
                     new TestAssertTrueOrFalseConverter(),
                     new AssertArgumentOrderConverter(),
                     new IgnoreToSkipConverter(),
-                    new TestCategoryConverter(),
+                    new TestCategoryToTraitConverter(),
                     new ExpectedExceptionConverter()
                 };
 

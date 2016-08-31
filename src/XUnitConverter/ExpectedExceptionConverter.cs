@@ -30,7 +30,7 @@ namespace XUnitConverter
             {
                 document = document.WithSyntaxRoot(newNode);
             }
-
+            document = Formatter.FormatAsync(document, cancellationToken: cancellationToken).Result;
             return Task.FromResult(document.Project.Solution);
         }
 
@@ -93,11 +93,10 @@ namespace XUnitConverter
                             TokenList(
                                 Token(
                                     TriviaList(
-                                        Comment("//HACK: Naive implementation of ExpectedException in XUnit\n")),
+                                        Comment("//HACK: Naive implementation of ExpectedException in XUnit")),
                                     SyntaxKind.PublicKeyword,
-                                    TriviaList())));
+                                    TriviaList()).NormalizeWhitespace()));
                 }
-
 
 
                 //Get the leading trivia (the newlines and comments)

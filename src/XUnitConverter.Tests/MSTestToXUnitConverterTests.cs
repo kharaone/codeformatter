@@ -139,6 +139,77 @@ namespace System.Composition.UnitTests
             await Verify(text, expected);
         }
 
+        [Fact]
+        public async Task TestUpdatesTestInitializeWithConstructor()
+        {
+            string text = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace System.Composition.UnitTests
+{
+    [TestClass]
+    public class MyTestClass
+    {
+        [TestInitialize]
+        public void Init()
+        {
+        }
+    }
+}
+";
+            var expected = @"
+using System;
+using Xunit;
+
+namespace System.Composition.UnitTests
+{
+    public class MyTestClass
+    {
+        public MyTestClass()
+        {
+        }
+    }
+}
+";
+            await Verify(text, expected);
+        }
+
+        [Fact]
+        public async Task TestUpdatesTestCleanupWithDispose()
+        {
+            string text = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace System.Composition.UnitTests
+{
+    [TestClass]
+    public class MyTestClass
+    {
+        [TestCleanup]
+        public void Clean()
+        {
+        }
+    }
+}
+";
+            var expected = @"
+using System;
+using Xunit;
+
+namespace System.Composition.UnitTests
+{
+    public class MyTestClass : IDisposable
+    {
+        public void Dispose()
+        {
+        }
+    }
+}
+";
+            await Verify(text, expected);
+        }
 
         [Fact]
         public async Task TestUpdatesTestMethodAttributes()

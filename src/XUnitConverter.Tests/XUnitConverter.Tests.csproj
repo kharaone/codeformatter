@@ -83,6 +83,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestCategoryToTraitConverterTest.cs" />
+    <Compile Include="IgnoreToSkipConverterTest.cs" />
+    <Compile Include="ExpectedExceptionConverterTest.cs" />
     <Compile Include="AssertArgumentOrderTest.cs" />
     <Compile Include="ConverterTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

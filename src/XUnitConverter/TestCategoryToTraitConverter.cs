@@ -17,13 +17,13 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace XUnitConverter
 {
-    public sealed class TestCategoryConverter : ConverterBase
+    public sealed class TestCategoryToTraitConverter : ConverterBase
     {
-        private readonly TestCategoryRewriter _rewriter = new TestCategoryRewriter();
+        private readonly TestCategoryToTraitRewriter _toTraitRewriter = new TestCategoryToTraitRewriter();
 
         protected override Task<Solution> ProcessAsync(Document document, SyntaxNode syntaxNode, CancellationToken cancellationToken)
         {
-            var newNode = _rewriter.Visit(syntaxNode);
+            var newNode = _toTraitRewriter.Visit(syntaxNode);
             if (newNode != syntaxNode)
             {
                 document = document.WithSyntaxRoot(newNode);
@@ -33,7 +33,7 @@ namespace XUnitConverter
             return Task.FromResult(document.Project.Solution);
         }
 
-        internal sealed class TestCategoryRewriter : CSharpSyntaxRewriter
+        internal sealed class TestCategoryToTraitRewriter : CSharpSyntaxRewriter
         {
             public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax syntaxNode)
             {
