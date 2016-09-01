@@ -53,7 +53,7 @@ public class Tests
             string source = @"
 public class Tests
 {
-    [Something, TestCategory(""SomeCategoryName"")]
+    [Something, SomeOther, TestCategory(""SomeCategoryName"")]
     public void TestA()
     {
         int actual = 1;
@@ -63,7 +63,8 @@ public class Tests
             string expected = @"
 public class Tests
 {
-    [Something, Trait(""Category"", ""SomeCategoryName"")]
+    [Trait(""Category"", ""SomeCategoryName"")]
+    [Something, SomeOther]
     public void TestA()
     {
         int actual = 1;
@@ -75,7 +76,8 @@ public class Tests
         }
 
 
-        [Fact(Skip="Didn't account for this case")]
+        //[Fact(Skip="Didn't account for this case")]
+        [Fact]
         public async Task TestMultipleTestCategoriesOnSameAttributeList()
         {
             string source = @"
@@ -91,7 +93,8 @@ public class Tests
             string expected = @"
 public class Tests
 {
-    [Trait(""Category"", ""SomeCategoryName1""),Trait(""Category"", ""SomeCategoryName2"")]
+    [Trait(""Category"", ""SomeCategoryName1"")]
+    [Trait(""Category"", ""SomeCategoryName2"")]
     public void TestA()
     {
         int actual = 1;
@@ -131,5 +134,31 @@ public class Tests
             await Verify(source, expected);
         }
 
+        [Fact]
+        public async Task TestCategoryToTraitIgnoreNonCategoryAttributes()
+        {
+            string source = @"
+public class Tests
+{
+    [Something]
+    public void TestA()
+    {
+        int actual = 1;
+    }
+}
+";
+            string expected = @"
+public class Tests
+{
+    [Something]
+    public void TestA()
+    {
+        int actual = 1;
+    }
+}
+";
+
+            await Verify(source, expected);
+        }
     }
 }

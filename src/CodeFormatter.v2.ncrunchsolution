@@ -8,7 +8,10 @@
   <FrameworkUtilisationTypeForMSpec>UseStaticAnalysis</FrameworkUtilisationTypeForMSpec>
   <FrameworkUtilisationTypeForMSTest>UseStaticAnalysis</FrameworkUtilisationTypeForMSTest>
   <FrameworkUtilisationTypeForXUnit2>UseDynamicAnalysis</FrameworkUtilisationTypeForXUnit2>
-  <NCrunchCacheStoragePath />
+  <NCrunchCacheStoragePath></NCrunchCacheStoragePath>
   <MetricsExclusionList>
+Microsoft.DotNet.CodeFormatting.Tests\Microsoft.DotNet.CodeFormatting.Tests.csproj
+Microsoft.DotNet.DeadRegionAnalysis.Tests\Microsoft.DotNet.DeadRegionAnalysis.Tests.csproj
+XUnitConverter.Tests\XUnitConverter.Tests.csproj
 </MetricsExclusionList>
 </SolutionConfiguration>

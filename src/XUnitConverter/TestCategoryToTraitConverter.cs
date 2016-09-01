@@ -41,28 +41,34 @@ namespace XUnitConverter
 
                 foreach (var attributeList in syntaxNode.AttributeLists)
                 {
-                    var nodeToUpdate =
+                    var nodeToUpdates =
                     attributeList
                     .Attributes
-                    .FirstOrDefault(attribute => attribute.Name.ToString().Equals("TestCategory"));
+                    .Where(attribute => attribute.Name.ToString().Equals("TestCategory")).ToList();
 
-                    if (nodeToUpdate != null)
+                    var localAttributeList = attributeList;
+                    foreach (var nodeToUpdate in nodeToUpdates)
                     {
                         var categoryName = nodeToUpdate.ArgumentList.Arguments.ToString();
                         var traitAttribute =
                             nodeToUpdate.WithName(ParseName("Trait"))
-                                .WithArgumentList(ParseAttributeArgumentList(string.Concat("(",@"""Category"",", categoryName,@")")));
+                                .WithArgumentList(ParseAttributeArgumentList(string.Concat("(", @"""Category"",", categoryName, @")")));
 
-                        var newAttribute =
+                        localAttributeList =
                             (AttributeListSyntax)VisitAttributeList(
-                                attributeList.ReplaceNode(nodeToUpdate, traitAttribute));
+                                attributeList.RemoveNode(nodeToUpdate, SyntaxRemoveOptions.KeepLeadingTrivia));
 
-                        newAttributes = newAttributes.Add(newAttribute);
+                        newAttributes = newAttributes.Add(AttributeList().WithAttributes(SeparatedList(new List<AttributeSyntax> { traitAttribute })));
+                        if(nodeToUpdates.Count() != attributeList.Attributes.Count)
+                        {
+                            newAttributes = newAttributes.Add(localAttributeList);
+                        }
                     }
-                    else
+                    if (!nodeToUpdates.Any())
                     {
-                        newAttributes = newAttributes.Add(attributeList);
+                        newAttributes = newAttributes.Add(localAttributeList);
                     }
+                    
                 }
 
                 //Get the leading trivia (the newlines and comments)
