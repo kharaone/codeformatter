@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.DotNet.CodeFormatting", "Microsoft.DotNet.CodeFormatting\Microsoft.DotNet.CodeFormatting.csproj", "{D535641F-A2D7-481C-930D-96C02F052B95}"
 EndProject
@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{34034F
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitConverter", "XUnitConverter\XUnitConverter.csproj", "{81B0FF57-C128-4F6B-83C7-94DBAF261582}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitConverter.Core", "XUnitConverter\XUnitConverter.Core.csproj", "{81B0FF57-C128-4F6B-83C7-94DBAF261582}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitConverter.Tests", "XUnitConverter.Tests\XUnitConverter.Tests.csproj", "{BA4C1700-8A72-4F33-AF67-0E60F324E521}"
 EndProject
@@ -23,6 +23,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.DotNet.DeadRegionAnalysis.Tests", "Microsoft.DotNet.DeadRegionAnalysis.Tests\Microsoft.DotNet.DeadRegionAnalysis.Tests.csproj", "{7C57FD95-030E-48B2-B369-6694BB922C8C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeadRegions", "DeadRegions\DeadRegions.csproj", "{B65D5F61-64BF-4219-863C-74C2744AE8FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitConverter", "XUnitConverter1\XUnitConverter.csproj", "{39ED6E1A-F189-422F-9ED6-F228A19C35DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,6 +64,10 @@ Global
 		{B65D5F61-64BF-4219-863C-74C2744AE8FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B65D5F61-64BF-4219-863C-74C2744AE8FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B65D5F61-64BF-4219-863C-74C2744AE8FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39ED6E1A-F189-422F-9ED6-F228A19C35DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39ED6E1A-F189-422F-9ED6-F228A19C35DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39ED6E1A-F189-422F-9ED6-F228A19C35DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39ED6E1A-F189-422F-9ED6-F228A19C35DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

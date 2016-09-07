@@ -93,9 +93,9 @@
     <Compile Include="MSTestToXUnitConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\XUnitConverter\XUnitConverter.csproj">
+    <ProjectReference Include="..\XUnitConverter\XUnitConverter.Core.csproj">
       <Project>{81b0ff57-c128-4f6b-83c7-94dbaf261582}</Project>
-      <Name>XUnitConverter</Name>
+      <Name>XUnitConverter.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
